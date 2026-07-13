@@ -7,6 +7,10 @@ const publicLinks = [
     { to: '/about', label: 'About' },
 ]
 
+const privateLinks = [
+    { to: '/dashboard', label: 'Dashboard' },
+]
+
 export default function Navbar() {
     const { user, profile, logout } = useAuth()
     const navigate = useNavigate()
@@ -23,9 +27,11 @@ export default function Navbar() {
         ? name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
         : '?'
 
+    const links = user ? privateLinks : publicLinks
+
     return (
         <header className="navbar">
-            <NavLink to="/" className="navbar__logo" onClick={() => setOpen(false)}>
+            <NavLink to={user ? '/dashboard' : '/'} className="navbar__logo" onClick={() => setOpen(false)}>
                 <span className="navbar__logo-dot" />
                 Kerri Cleaner
             </NavLink>
@@ -40,7 +46,7 @@ export default function Navbar() {
             </button>
 
             <div className={`navbar__links ${open ? 'navbar__links--open' : ''}`}>
-                {publicLinks.map((link) => (
+                {links.map((link) => (
                     <NavLink
                         key={link.to}
                         to={link.to}
@@ -66,7 +72,7 @@ export default function Navbar() {
                                 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                             >
                                 <span className="navbar__avatar">{initials}</span>
-                                {name.split(' ')[0] || 'Dashboard'}
+                                {name.split(' ')[0] || 'Account'}
                             </NavLink>
                             <button type="button" className="btn btn--ghost btn--sm" onClick={handleLogout}>
                                 Log out
