@@ -1062,3 +1062,45 @@ h3 {
   margin-top: 0.3rem;
   font-style: italic;
 }
+
+/* Status info panels shown on booking cards */
+.booking-status-panel {
+  margin-top: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  border: 1px solid transparent;
+}
+
+.booking-status-panel--payment {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  border-color: rgba(113, 63, 18, 0.2);
+}
+
+.booking-status-panel--approved {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-color: rgba(22, 101, 52, 0.2);
+}
+
+.booking-status-panel__title {
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.booking-status-panel__row {
+  margin: 0.2rem 0;
+}
+
+.booking-status-panel__row a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.booking-status-panel__footnote {
+  margin-top: 0.4rem;
+  font-style: italic;
+  opacity: 0.85;
+}

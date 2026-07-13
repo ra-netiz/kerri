@@ -15,12 +15,21 @@ const timeSlots = [
     '04:00 PM', '05:00 PM',
 ]
 
+// Room count tiers and their flat prices (USD)
+const roomTiers = [
+    { value: '1-3', label: '1 – 3 rooms', price: 200 },
+    { value: '4-6', label: '4 – 6 rooms', price: 300 },
+    { value: '7-10', label: '7 – 10 rooms', price: 500 },
+    { value: '10+', label: '10+ rooms', price: 1000 },
+]
+
 export default function BookingPage() {
     const { user } = useAuth()
     const navigate = useNavigate()
 
     const [form, setForm] = useState({
         service: 'Home Cleaning',
+        rooms: '1-3',
         date: '',
         time: '08:00 AM',
         address: '',
@@ -38,6 +47,8 @@ export default function BookingPage() {
         setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
         setError('')
     }
+
+    const selectedTier = roomTiers.find((t) => t.value === form.rooms) || roomTiers[0]
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -58,6 +69,8 @@ export default function BookingPage() {
         const { error: insertError } = await supabase.from('bookings').insert({
             user_id: user.id,
             service: form.service,
+            rooms: form.rooms,
+            price: selectedTier.price,
             date: new Date(form.date).toLocaleDateString('en-GB', {
                 day: 'numeric',
                 month: 'short',
@@ -103,7 +116,7 @@ export default function BookingPage() {
                             className="btn btn--ghost"
                             onClick={() => {
                                 setSuccess(false)
-                                setForm({ service: 'Home Cleaning', date: '', time: '08:00 AM', address: '', notes: '' })
+                                setForm({ service: 'Home Cleaning', rooms: '1-3', date: '', time: '08:00 AM', address: '', notes: '' })
                             }}
                         >
                             Book another
@@ -131,6 +144,17 @@ export default function BookingPage() {
                         <select name="service" value={form.service} onChange={handleChange}>
                             {services.map((s) => (
                                 <option key={s} value={s}>{s}</option>
+                            ))}
+                        </select>
+                    </label>
+
+                    <label>
+                        Number of rooms
+                        <select name="rooms" value={form.rooms} onChange={handleChange}>
+                            {roomTiers.map((t) => (
+                                <option key={t.value} value={t.value}>
+                                    {t.label} — ${t.price}
+                                </option>
                             ))}
                         </select>
                     </label>
@@ -180,6 +204,10 @@ export default function BookingPage() {
                             placeholder="Anything we should know — pets, access codes, areas to focus on…"
                         />
                     </label>
+
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-soft)', margin: '-0.4rem 0 0.2rem' }}>
+                        Estimated cost: <strong>${selectedTier.price}</strong> ({selectedTier.label})
+                    </p>
 
                     <button type="submit" className="btn btn--primary" disabled={loading}>
                         {loading ? 'Submitting…' : 'Submit booking'}

@@ -5,9 +5,17 @@ import { supabase } from '../lib/supabase.js'
 
 const statusClass = {
     Confirmed: 'badge--green',
+    Approved: 'badge--green',
     Pending: 'badge--amber',
+    Processing: 'badge--amber',
     Completed: 'badge--muted',
     Cancelled: 'badge--muted',
+}
+
+// Placeholder contact info shown at the payment step
+const PAYMENT_CONTACT = {
+    email: 'payments@kerricleaner.com',
+    phone: '+234 800 000 0000',
 }
 
 export default function Dashboard() {
@@ -49,7 +57,7 @@ export default function Dashboard() {
         .slice(0, 2)
 
     const upcoming = bookings.filter((b) =>
-        ['Pending', 'Confirmed'].includes(b.status)
+        ['Pending', 'Processing', 'Confirmed', 'Approved'].includes(b.status)
     )
     const past = bookings.filter((b) =>
         ['Completed', 'Cancelled'].includes(b.status)
@@ -105,7 +113,6 @@ export default function Dashboard() {
                                 <p className="dash-eyebrow">Dashboard</p>
                                 <h2>Upcoming bookings</h2>
                             </div>
-                            {/* Fixed: now points to /booking */}
                             <Link to="/booking" className="btn btn--primary btn--sm">
                                 Book a clean
                             </Link>
@@ -204,19 +211,63 @@ export default function Dashboard() {
 function BookingCard({ booking, muted = false }) {
     return (
         <div className={`booking-card ${muted ? 'booking-card--muted' : ''}`}>
-            <div>
-                <p className="booking-card__service">{booking.service}</p>
-                <p className="booking-card__meta">
-                    {booking.date} · {booking.time}
-                </p>
-                <p className="booking-card__meta">{booking.address}</p>
-                {booking.notes && (
-                    <p className="booking-card__notes">{booking.notes}</p>
+            <div style={{ width: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                        <p className="booking-card__service">{booking.service}</p>
+                        <p className="booking-card__meta">
+                            {booking.date} · {booking.time}
+                        </p>
+                        <p className="booking-card__meta">{booking.address}</p>
+                        {booking.rooms && (
+                            <p className="booking-card__meta">{booking.rooms} rooms</p>
+                        )}
+                        {booking.notes && (
+                            <p className="booking-card__notes">{booking.notes}</p>
+                        )}
+                    </div>
+                    <span className={`badge ${statusClass[booking.status] || 'badge--muted'}`}>
+                        {booking.status}
+                    </span>
+                </div>
+
+                {/* Processing: payment required panel */}
+                {booking.status === 'Processing' && (
+                    <div className="booking-status-panel booking-status-panel--payment">
+                        <p className="booking-status-panel__title">💳 Payment required</p>
+                        <p className="booking-status-panel__row">
+                            <strong>Amount due:</strong> ${booking.price ?? '—'}
+                        </p>
+                        {booking.admin_note && (
+                            <p className="booking-status-panel__row">{booking.admin_note}</p>
+                        )}
+                        <p className="booking-status-panel__row">
+                            To complete payment, contact us at{' '}
+                            <a href={`mailto:${PAYMENT_CONTACT.email}`}>{PAYMENT_CONTACT.email}</a>{' '}
+                            or{' '}
+                            <a href={`tel:${PAYMENT_CONTACT.phone}`}>{PAYMENT_CONTACT.phone}</a>.
+                        </p>
+                        <p className="booking-status-panel__footnote">
+                            Your booking will be approved once payment is confirmed.
+                        </p>
+                    </div>
+                )}
+
+                {/* Approved: confirmation panel */}
+                {booking.status === 'Approved' && (
+                    <div className="booking-status-panel booking-status-panel--approved">
+                        <p className="booking-status-panel__title">✅ Booking confirmed</p>
+                        <p className="booking-status-panel__row">
+                            Our team will be at <strong>{booking.address}</strong> on{' '}
+                            <strong>{booking.date}</strong> at <strong>{booking.time}</strong> to
+                            carry out your {booking.service.toLowerCase()}.
+                        </p>
+                        {booking.admin_note && (
+                            <p className="booking-status-panel__row">{booking.admin_note}</p>
+                        )}
+                    </div>
                 )}
             </div>
-            <span className={`badge ${statusClass[booking.status] || 'badge--muted'}`}>
-                {booking.status}
-            </span>
         </div>
     )
 }
