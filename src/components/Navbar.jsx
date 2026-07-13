@@ -9,6 +9,7 @@ const publicLinks = [
 
 const privateLinks = [
     { to: '/dashboard', label: 'Dashboard' },
+    { to: '/booking', label: 'Book a clean' },
 ]
 
 export default function Navbar() {
@@ -31,7 +32,11 @@ export default function Navbar() {
 
     return (
         <header className="navbar">
-            <NavLink to={user ? '/dashboard' : '/'} className="navbar__logo" onClick={() => setOpen(false)}>
+            <NavLink
+                to={user ? '/dashboard' : '/'}
+                className="navbar__logo"
+                onClick={() => setOpen(false)}
+            >
                 <span className="navbar__logo-dot" />
                 Kerri Cleaner
             </NavLink>
@@ -74,7 +79,11 @@ export default function Navbar() {
                                 <span className="navbar__avatar">{initials}</span>
                                 {name.split(' ')[0] || 'Account'}
                             </NavLink>
-                            <button type="button" className="btn btn--ghost btn--sm" onClick={handleLogout}>
+                            <button
+                                type="button"
+                                className="btn btn--ghost btn--sm"
+                                onClick={handleLogout}
+                            >
                                 Log out
                             </button>
                         </>
@@ -89,7 +98,11 @@ export default function Navbar() {
                             >
                                 Log in
                             </NavLink>
-                            <NavLink to="/register" onClick={() => setOpen(false)} className="btn btn--primary btn--sm">
+                            <NavLink
+                                to="/register"
+                                onClick={() => setOpen(false)}
+                                className="btn btn--primary btn--sm"
+                            >
                                 Register
                             </NavLink>
                         </>

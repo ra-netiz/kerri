@@ -48,19 +48,26 @@ export default function Dashboard() {
         .toUpperCase()
         .slice(0, 2)
 
-    const upcoming = bookings.filter((b) => ['Pending', 'Confirmed'].includes(b.status))
-    const past = bookings.filter((b) => ['Completed', 'Cancelled'].includes(b.status))
+    const upcoming = bookings.filter((b) =>
+        ['Pending', 'Confirmed'].includes(b.status)
+    )
+    const past = bookings.filter((b) =>
+        ['Completed', 'Cancelled'].includes(b.status)
+    )
 
     return (
         <div className="container dashboard" style={{ paddingBlock: '2rem' }}>
-
             {/* Sidebar */}
             <aside className="dash-sidebar">
                 <div className="dash-avatar">{initials}</div>
                 <p className="dash-name">{name}</p>
                 <p className="dash-email">{email}</p>
                 <p className="dash-joined">
-                    Since {new Date(joinedAt).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
+                    Since{' '}
+                    {new Date(joinedAt).toLocaleDateString('en-GB', {
+                        month: 'short',
+                        year: 'numeric',
+                    })}
                 </p>
 
                 <nav className="dash-nav">
@@ -80,14 +87,17 @@ export default function Dashboard() {
                     ))}
                 </nav>
 
-                <button type="button" className="btn btn--ghost btn--sm dash-logout" onClick={handleLogout}>
+                <button
+                    type="button"
+                    className="btn btn--ghost btn--sm dash-logout"
+                    onClick={handleLogout}
+                >
                     Log out
                 </button>
             </aside>
 
             {/* Main */}
             <div className="dash-main">
-
                 {activeTab === 'bookings' && (
                     <>
                         <div className="dash-main__header">
@@ -95,7 +105,10 @@ export default function Dashboard() {
                                 <p className="dash-eyebrow">Dashboard</p>
                                 <h2>Upcoming bookings</h2>
                             </div>
-                            <Link to="/about" className="btn btn--primary btn--sm">Book a clean</Link>
+                            {/* Fixed: now points to /booking */}
+                            <Link to="/booking" className="btn btn--primary btn--sm">
+                                Book a clean
+                            </Link>
                         </div>
 
                         {bookingsLoading ? (
@@ -103,13 +116,19 @@ export default function Dashboard() {
                         ) : upcoming.length === 0 ? (
                             <div className="dash-empty">
                                 <p>No upcoming bookings yet.</p>
-                                <Link to="/about" className="btn btn--outline btn--sm" style={{ marginTop: '1rem' }}>
+                                <Link
+                                    to="/booking"
+                                    className="btn btn--outline btn--sm"
+                                    style={{ marginTop: '1rem' }}
+                                >
                                     Book your first clean
                                 </Link>
                             </div>
                         ) : (
                             <div className="booking-list">
-                                {upcoming.map((b) => <BookingCard key={b.id} booking={b} />)}
+                                {upcoming.map((b) => (
+                                    <BookingCard key={b.id} booking={b} />
+                                ))}
                             </div>
                         )}
                     </>
@@ -127,10 +146,14 @@ export default function Dashboard() {
                         {bookingsLoading ? (
                             <div className="dash-empty"><p>Loading history…</p></div>
                         ) : past.length === 0 ? (
-                            <div className="dash-empty"><p>No past bookings recorded yet.</p></div>
+                            <div className="dash-empty">
+                                <p>No past bookings recorded yet.</p>
+                            </div>
                         ) : (
                             <div className="booking-list">
-                                {past.map((b) => <BookingCard key={b.id} booking={b} muted />)}
+                                {past.map((b) => (
+                                    <BookingCard key={b.id} booking={b} muted />
+                                ))}
                             </div>
                         )}
                     </>
@@ -157,17 +180,22 @@ export default function Dashboard() {
                             <div className="profile-field">
                                 <span className="profile-field__label">Member since</span>
                                 <span className="profile-field__value">
-                                    {new Date(joinedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                    {new Date(joinedAt).toLocaleDateString('en-GB', {
+                                        day: 'numeric',
+                                        month: 'long',
+                                        year: 'numeric',
+                                    })}
                                 </span>
                             </div>
                             <div className="profile-field">
                                 <span className="profile-field__label">Total cleans</span>
-                                <span className="profile-field__value">{past.length} completed</span>
+                                <span className="profile-field__value">
+                                    {past.length} completed
+                                </span>
                             </div>
                         </div>
                     </>
                 )}
-
             </div>
         </div>
     )
@@ -179,8 +207,12 @@ function BookingCard({ booking, muted = false }) {
             <div>
                 <p className="booking-card__service">{booking.service}</p>
                 <p className="booking-card__meta">
-                    {booking.date} · {booking.time} · {booking.address}
+                    {booking.date} · {booking.time}
                 </p>
+                <p className="booking-card__meta">{booking.address}</p>
+                {booking.notes && (
+                    <p className="booking-card__notes">{booking.notes}</p>
+                )}
             </div>
             <span className={`badge ${statusClass[booking.status] || 'badge--muted'}`}>
                 {booking.status}
